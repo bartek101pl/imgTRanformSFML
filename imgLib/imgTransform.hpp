@@ -12,11 +12,13 @@ public:
     static sf::Image transformEdgeFromGreySobel(sf::Image &src);
     static sf::Image transformEdgeFromGreyPrewitts(sf::Image &src);
     static sf::Image transformEdgeFromGreyLaplacian(sf::Image &src);
+    static sf::Image filtrGaussowski(sf::Image &src);
 private:
     static sf::Color colorToGrey(sf::Color src);
     static sf::Color getGreyColor(int x);
     static int  colorToInt(sf::Color src);
     static int multiplayArray(int mask[3][3],int img[3][3]);
+    static int multiplayArray(int mask[5][5],int img[5][5]);
     static sf::Image transformEdge(int filtrx[3][3], int filtry[3][3], sf::Image &src);
 };
 

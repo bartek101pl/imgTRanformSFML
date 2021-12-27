@@ -55,7 +55,8 @@ sf::Image imgTransform::transformEdge(int (*filtrx)[3], int (*filtry)[3], sf::Im
 
             int withX = imgTransform::multiplayArray(filtrx,matriX);
             int withY = imgTransform::multiplayArray(filtry,matriX);
-            int r = sqrt(pow(withX,2)+ pow(withY,2));
+            int r = sqrt(pow(withX,2)+ pow(withY,2))-10;
+            r = (r<0)?0:r;
             res.setPixel(i,j,imgTransform::getGreyColor(r));
 
         }
@@ -84,5 +85,41 @@ sf::Image imgTransform::transformEdgeFromGreyLaplacian(sf::Image &src) {
 
 
     return imgTransform::transformEdge(filtrx,filtry,src);
+}
+
+sf::Image imgTransform::filtrGaussowski(sf::Image &src) {
+    int filter[5][5] = {{1,4,7,4,1},{4,16,26,16,4},{7,26,41,26,7},{4,16,26,16,4},{1,4,7,4,1}};
+
+    sf::Image res = src;
+//    res.create(src.getSize().x-2,src.getSize().y-2,sf::Color::Black);
+
+    for (int i = 2; i < src.getSize().x-2; ++i) {
+        for (int j = 2; j < src.getSize().y-2; ++j) {
+            int matriX[5][5] ={{imgTransform::colorToInt(src.getPixel(i-2,j-2)),imgTransform::colorToInt(src.getPixel(i-2,j-1)),imgTransform::colorToInt(src.getPixel(i-2,j)),imgTransform::colorToInt(src.getPixel(i-2,j+1)),imgTransform::colorToInt(src.getPixel(i-2,j+2))},
+                               {imgTransform::colorToInt(src.getPixel(i-1,j-2)),imgTransform::colorToInt(src.getPixel(i-1,j-1)),imgTransform::colorToInt(src.getPixel(i-1,j)),imgTransform::colorToInt(src.getPixel(i-1,j+1)),imgTransform::colorToInt(src.getPixel(i-1,j+2))},
+                               {imgTransform::colorToInt(src.getPixel(i,j-2)),imgTransform::colorToInt(src.getPixel(i,j-1)),imgTransform::colorToInt(src.getPixel(i,j)),imgTransform::colorToInt(src.getPixel(i,j+1)),imgTransform::colorToInt(src.getPixel(i,j+2))},
+                               {imgTransform::colorToInt(src.getPixel(i+1,j-2)),imgTransform::colorToInt(src.getPixel(i+1,j-1)),imgTransform::colorToInt(src.getPixel(i+1,j)),imgTransform::colorToInt(src.getPixel(i+1,j+1)),imgTransform::colorToInt(src.getPixel(i+1,j+2))},
+                               {imgTransform::colorToInt(src.getPixel(i+2,j-2)),imgTransform::colorToInt(src.getPixel(i+2,j-1)),imgTransform::colorToInt(src.getPixel(i+2,j)),imgTransform::colorToInt(src.getPixel(i+2,j+1)),imgTransform::colorToInt(src.getPixel(i+2,j+2))}
+                               };
+
+
+            int r = imgTransform::multiplayArray(filter,matriX);
+            r= abs(r)/273;
+            res.setPixel(i,j,imgTransform::getGreyColor(r));
+
+        }
+    }
+    return res;
+}
+
+int imgTransform::multiplayArray(int (*mask)[5], int (*img)[5]) {
+    int a = 0;
+    for(int i = 0;i<5;i++)
+    {
+        for (int j = 0; j < 5; ++j) {
+            a+=mask[i][j]*img[i][j];
+        }
+    }
+    return a;
 }
 
